@@ -1,0 +1,37 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3.5.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+
+      - name: Lint YAML
+        uses: ibiqlik/action-yamllint@v3.1.1
+        with:
+          file_or_dir: .github/workflows config.yaml
+          config_data: |
+            extends: default
+            rules:
+              document-start: disable
+              line-length: disable
+              truthy: disable
+
+      - name: Lint shell (shellcheck)
+        run: shellcheck speedtest-exporter.sh
