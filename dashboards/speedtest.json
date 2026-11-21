@@ -84,9 +84,9 @@
     {"id": 12, "type": "table", "title": "Last result", "gridPos": {"x": 0, "y": 29, "w": 24, "h": 5},
      "datasource": {"type": "prometheus", "uid": "${datasource}"},
      "fieldConfig": {"defaults": {}, "overrides": [
-       {"matcher": {"id": "byName", "options": "Download"}, "properties": [{"id": "unit", "value": "bps"}]},
-       {"matcher": {"id": "byName", "options": "Upload"}, "properties": [{"id": "unit", "value": "bps"}]},
-       {"matcher": {"id": "byName", "options": "Latency"}, "properties": [{"id": "unit", "value": "s"}]}]},
+       {"matcher": {"id": "byName", "options": "Download"}, "properties": [{"id": "unit", "value": "bps"}, {"id": "custom.cellOptions", "value": {"type": "gauge", "mode": "gradient", "valueDisplayMode": "color"}}, {"id": "color", "value": {"mode": "continuous-RdYlGr"}}, {"id": "min", "value": 0}, {"id": "max", "value": 1000000000}]},
+       {"matcher": {"id": "byName", "options": "Upload"}, "properties": [{"id": "unit", "value": "bps"}, {"id": "custom.cellOptions", "value": {"type": "gauge", "mode": "gradient", "valueDisplayMode": "color"}}, {"id": "color", "value": {"mode": "continuous-RdYlGr"}}, {"id": "min", "value": 0}, {"id": "max", "value": 50000000}]},
+       {"matcher": {"id": "byName", "options": "Latency"}, "properties": [{"id": "unit", "value": "s"}, {"id": "custom.cellOptions", "value": {"type": "gauge", "mode": "gradient", "valueDisplayMode": "color"}}, {"id": "color", "value": {"mode": "continuous-GrYlRd"}}, {"id": "min", "value": 0}, {"id": "max", "value": 0.1}]}]},
      "targets": [
        {"refId": "A", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "instant": true, "range": false, "format": "table",
         "expr": "max by (server_name, server_location, server_country, isp) (last_over_time(speedtest_download_speed_Bps[30m])) * 8"},
