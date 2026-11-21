@@ -1,0 +1,55 @@
+{
+  "type": "result",
+  "timestamp": "2025-11-21T11:00:00Z",
+  "ping": {
+    "jitter": 2.833,
+    "latency": 15.576,
+    "low": 12.904,
+    "high": 19.351
+  },
+  "download": {
+    "bandwidth": 88264522,
+    "bytes": 1105187520,
+    "elapsed": 12502,
+    "latency": {
+      "iqm": 31.218,
+      "low": 13.117,
+      "high": 245.861,
+      "jitter": 9.564
+    }
+  },
+  "upload": {
+    "bandwidth": 11942810,
+    "bytes": 125839360,
+    "elapsed": 10807,
+    "latency": {
+      "iqm": 42.307,
+      "low": 14.002,
+      "high": 312.550,
+      "jitter": 15.877
+    }
+  },
+  "packetLoss": 0.5,
+  "isp": "Play",
+  "interface": {
+    "internalIp": "192.0.2.10",
+    "name": "en0",
+    "macAddr": "00:00:5E:00:53:01",
+    "isVpn": false,
+    "externalIp": "198.51.100.23"
+  },
+  "server": {
+    "id": 37249,
+    "host": "speedtest.example.net",
+    "port": 8080,
+    "name": "Play",
+    "location": "Warszawa",
+    "country": "Poland",
+    "ip": "198.51.100.45"
+  },
+  "result": {
+    "id": "00000000-0000-4000-8000-000000000000",
+    "url": "https://www.speedtest.net/result/c/00000000-0000-4000-8000-000000000000",
+    "persisted": true
+  }
+}
