@@ -49,7 +49,7 @@ docker compose up -d
 
 The compose file starts the exporter, Prometheus and Grafana. Open Grafana at http://localhost:3000 (login `admin`/`admin`) and find the provisioned "Speedtest" dashboard. Prometheus scrapes every 15 minutes, so the first data point can take up to 15 minutes to appear.
 
-To use the dashboard in another Grafana, import `dashboards/speedtest.json` and pick your Prometheus datasource in the `datasource` variable.
+To use the dashboard in another Grafana, import `dashboards/speedtest.json` and pick your Prometheus datasource in the `datasource` variable. The dashboard shows throughput in bits per second, like ISP plans and speedtest.net; the metrics stay in bytes per second.
 
 ## Development
 
