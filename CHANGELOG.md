@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0](https://github.com/szpaczyna/speedtest-exporter/compare/v2.0.0...v2.1.0) (2026-11-21)
+
+
+### Features
+
+* **dashboard:** add download histogram and panel colors ([9d1b92d](https://github.com/szpaczyna/speedtest-exporter/commit/9d1b92df111b65c75a29c80d8462e2acf6c9401e))
+* **dashboard:** add download histogram and panel colors ([abeb1bd](https://github.com/szpaczyna/speedtest-exporter/commit/abeb1bdbde9e0a900a80ba679508d66f101685c4))
+
 ## [2.0.0](https://github.com/szpaczyna/speedtest-exporter/compare/v1.2.0...v2.0.0) (2026-11-21)
 
 
