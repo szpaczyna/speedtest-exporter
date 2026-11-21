@@ -1,3 +1,5 @@
 .git/
 .github/
 README.md
+testdata/
+*_test.go
