@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os/exec"
@@ -117,7 +120,17 @@ func (c *collector) parse() ([]prometheus.Metric, error) {
 func runSpeedtest() ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 80*time.Second)
 	defer cancel()
-	return exec.CommandContext(ctx, "speedtest", "--accept-license", "--accept-gdpr", "-f", "json").Output()
+	out, err := exec.CommandContext(ctx, "speedtest", "--accept-license", "--accept-gdpr", "-f", "json").Output()
+	return out, withStderr(err)
+}
+
+// withStderr adds the CLI's stderr, which holds the reason (e.g. Ookla rate limit), to the bare exit status.
+func withStderr(err error) error {
+	var ee *exec.ExitError
+	if errors.As(err, &ee) && len(ee.Stderr) > 0 {
+		return fmt.Errorf("%w: %s", err, bytes.TrimSpace(ee.Stderr))
+	}
+	return err
 }
 
 func main() {

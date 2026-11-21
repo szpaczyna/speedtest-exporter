@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -107,5 +108,13 @@ func TestCollectConcurrent(t *testing.T) {
 	wg.Wait()
 	if n := calls.Load(); n != 1 {
 		t.Fatalf("run called %d times, want 1", n)
+	}
+}
+
+func TestWithStderr(t *testing.T) {
+	_, err := exec.Command("sh", "-c", "echo 'Limit reached' >&2; exit 173").Output()
+	got := withStderr(err).Error()
+	if got != "exit status 173: Limit reached" {
+		t.Fatalf("got %q", got)
 	}
 }
