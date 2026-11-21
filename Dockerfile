@@ -21,7 +21,7 @@ RUN case "$(apk info --print-arch)" in \
       "https://github.com/ricoberger/script_exporter/releases/download/${SCRIPT_EXPORTER_VERSION}/script_exporter-linux-${_arch}" && \
     chmod +x /usr/local/bin/script_exporter
 
-COPY config.yaml config.yaml
+COPY config.yaml /config.yaml
 COPY speedtest-exporter.sh /usr/local/bin/speedtest-exporter.sh
 
 EXPOSE 9469
