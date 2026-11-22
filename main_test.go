@@ -56,8 +56,8 @@ speedtest_upload_speed_Bps{L} 1.194281e+07
 	}
 }
 
-func TestCollectError(t *testing.T) {
-	c := &collector{run: func() ([]byte, error) { return nil, errors.New("boom") }}
+func assertDown(t *testing.T, c *collector) {
+	t.Helper()
 	want := `
 # HELP speedtest_up Whether the last speedtest succeeded.
 # TYPE speedtest_up gauge
@@ -69,6 +69,18 @@ speedtest_up 0
 	if n := testutil.CollectAndCount(c); n != 2 {
 		t.Fatalf("got %d metrics, want up and scrape_duration only", n)
 	}
+}
+
+func TestCollectError(t *testing.T) {
+	assertDown(t, &collector{run: func() ([]byte, error) { return nil, errors.New("boom") }})
+}
+
+func TestCollectNotResult(t *testing.T) {
+	assertDown(t, &collector{run: func() ([]byte, error) { return []byte("{}"), nil }})
+}
+
+func TestCollectInvalidJSON(t *testing.T) {
+	assertDown(t, &collector{run: func() ([]byte, error) { return []byte("x"), nil }})
 }
 
 func TestCollectWithoutPacketLoss(t *testing.T) {
