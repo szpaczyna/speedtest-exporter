@@ -30,6 +30,7 @@ var (
 )
 
 type result struct {
+	Type string `json:"type"`
 	Ping struct {
 		Latency float64 `json:"latency"`
 		Jitter  float64 `json:"jitter"`
@@ -100,6 +101,9 @@ func (c *collector) parse() ([]prometheus.Metric, error) {
 	var r result
 	if err := json.Unmarshal(out, &r); err != nil {
 		return nil, err
+	}
+	if r.Type != "result" {
+		return nil, fmt.Errorf("unexpected result type %q", r.Type)
 	}
 	lv := []string{strconv.Itoa(r.Server.ID), r.Server.Name, r.Server.Location, r.Server.Country, r.ISP}
 	gauge := func(d *prometheus.Desc, v float64) prometheus.Metric {

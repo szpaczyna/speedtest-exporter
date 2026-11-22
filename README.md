@@ -12,7 +12,7 @@ Both are built for `linux/amd64` and `linux/arm64`.
 ## Run
 
 ```bash
-docker run -d --name speedtest-exporter -p 9469:9469 szpaczyn/speedtest-exporter:latest
+docker run -d --name speedtest-exporter -p 127.0.0.1:9469:9469 szpaczyn/speedtest-exporter:latest
 curl http://localhost:9469/metrics
 ```
 

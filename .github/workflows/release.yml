@@ -57,7 +57,7 @@ jobs:
 
       - name: Extract version
         id: ver
-        run: echo "VERSION=${{ needs.create-release-pr.outputs.tag_name }}" | sed 's/^v//' >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=${{ needs.create-release-pr.outputs.tag_name }}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push
         uses: docker/build-push-action@v7
