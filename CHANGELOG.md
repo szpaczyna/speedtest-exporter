@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.1.1](https://github.com/szpaczyna/speedtest-exporter/compare/v2.1.0...v2.1.1) (2026-11-22)
+
+
+### Bug Fixes
+
+* **docker:** verify Ookla CLI tarball checksum ([1bf66dc](https://github.com/szpaczyna/speedtest-exporter/commit/1bf66dc2e9ac94e65b30639ac7264aebdc237b2d))
+* reject speedtest output that is not a result ([6974f80](https://github.com/szpaczyna/speedtest-exporter/commit/6974f80861724c4ee9a4a85ef20615f4d3e2403c))
+* validate speedtest output and verify Ookla CLI checksum ([afdc250](https://github.com/szpaczyna/speedtest-exporter/commit/afdc250d603562235319cd39da4209958ca80d7f))
+
+
+### CI/CD
+
+* drop unused metadata step from PR image build ([3c0ca06](https://github.com/szpaczyna/speedtest-exporter/commit/3c0ca06f3b554248a206a582fe79c9417a14bec2))
+* remove no-op sed from release version step ([c686dde](https://github.com/szpaczyna/speedtest-exporter/commit/c686ddec795ef91c7c795d740eef402b54ffb39c))
+
+
+### Documentation
+
+* bind docker run example to localhost ([109db0e](https://github.com/szpaczyna/speedtest-exporter/commit/109db0ed26f960a726f5726818ce1454d7987e6f))
+
 ## [2.1.0](https://github.com/szpaczyna/speedtest-exporter/compare/v2.0.0...v2.1.0) (2026-11-21)
 
 
