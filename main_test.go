@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
@@ -128,5 +130,33 @@ func TestWithStderr(t *testing.T) {
 	got := withStderr(err).Error()
 	if got != "exit status 173: Limit reached" {
 		t.Fatalf("got %q", got)
+	}
+}
+
+func captureLog(t *testing.T) *bytes.Buffer {
+	t.Helper()
+	var buf bytes.Buffer
+	prev := slog.Default()
+	slog.SetDefault(slog.New(slog.NewTextHandler(&buf, nil)))
+	t.Cleanup(func() { slog.SetDefault(prev) })
+	return &buf
+}
+
+func TestLogResult(t *testing.T) {
+	buf := captureLog(t)
+	data := fixture(t)
+	testutil.CollectAndCount(&collector{run: func() ([]byte, error) { return data, nil }})
+	for _, want := range []string{`msg="speedtest finished"`, "server_id=37249", "download_mbps=706.116176", "upload_mbps=95.54248"} {
+		if !strings.Contains(buf.String(), want) {
+			t.Errorf("log missing %q:\n%s", want, buf)
+		}
+	}
+}
+
+func TestLogError(t *testing.T) {
+	buf := captureLog(t)
+	testutil.CollectAndCount(&collector{run: func() ([]byte, error) { return nil, errors.New("boom") }})
+	if !strings.Contains(buf.String(), `level=ERROR msg="speedtest failed" err=boom`) {
+		t.Errorf("unexpected log:\n%s", buf)
 	}
 }

@@ -6,8 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"os/exec"
 	"strconv"
 	"sync"
@@ -80,30 +81,41 @@ func (c *collector) Collect(ch chan<- prometheus.Metric) {
 }
 
 func (c *collector) test() []prometheus.Metric {
+	slog.Info("speedtest started")
 	start := time.Now()
-	ms, err := c.parse()
+	ms, r, err := c.parse()
+	duration := time.Since(start)
 	up := 1.0
 	if err != nil {
-		log.Printf("speedtest failed: %v", err)
+		slog.Error("speedtest failed", "err", err, "duration", duration)
 		up = 0
+	} else {
+		slog.Info("speedtest finished",
+			"server_id", r.Server.ID,
+			"server_name", r.Server.Name,
+			"isp", r.ISP,
+			"download_mbps", r.Download.Bandwidth*8/1e6,
+			"upload_mbps", r.Upload.Bandwidth*8/1e6,
+			"latency_ms", r.Ping.Latency,
+			"duration", duration)
 	}
 	return append(ms,
 		prometheus.MustNewConstMetric(upDesc, prometheus.GaugeValue, up),
-		prometheus.MustNewConstMetric(durationDesc, prometheus.GaugeValue, time.Since(start).Seconds()),
+		prometheus.MustNewConstMetric(durationDesc, prometheus.GaugeValue, duration.Seconds()),
 	)
 }
 
-func (c *collector) parse() ([]prometheus.Metric, error) {
+func (c *collector) parse() ([]prometheus.Metric, *result, error) {
 	out, err := c.run()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var r result
 	if err := json.Unmarshal(out, &r); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if r.Type != "result" {
-		return nil, fmt.Errorf("unexpected result type %q", r.Type)
+		return nil, nil, fmt.Errorf("unexpected result type %q", r.Type)
 	}
 	lv := []string{strconv.Itoa(r.Server.ID), r.Server.Name, r.Server.Location, r.Server.Country, r.ISP}
 	gauge := func(d *prometheus.Desc, v float64) prometheus.Metric {
@@ -118,7 +130,7 @@ func (c *collector) parse() ([]prometheus.Metric, error) {
 	if r.PacketLoss != nil {
 		ms = append(ms, gauge(packetLossDesc, *r.PacketLoss/100))
 	}
-	return ms, nil
+	return ms, &r, nil
 }
 
 func runSpeedtest() ([]byte, error) {
@@ -140,5 +152,10 @@ func withStderr(err error) error {
 func main() {
 	prometheus.MustRegister(&collector{run: runSpeedtest})
 	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(":9469", nil))
+	addr := ":9469"
+	slog.Info("listening", "addr", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		slog.Error("server stopped", "err", err)
+		os.Exit(1)
+	}
 }
