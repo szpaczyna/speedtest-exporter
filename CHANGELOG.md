@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://github.com/szpaczyna/speedtest-exporter/compare/v2.1.1...v2.2.0) (2026-11-23)
+
+
+### Features
+
+* log startup and speedtest results ([eb68051](https://github.com/szpaczyna/speedtest-exporter/commit/eb6805154a8a6afbef7594a04a8b58ac3c3f96e7))
+* log startup and speedtest results ([c25d955](https://github.com/szpaczyna/speedtest-exporter/commit/c25d955073bf4428b28ede923622fb4d6d9ae050))
+
 ## [2.1.1](https://github.com/szpaczyna/speedtest-exporter/compare/v2.1.0...v2.1.1) (2026-11-22)
 
 
