@@ -18,6 +18,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+const (
+	minResultAge     = 10 * time.Minute
+	speedtestTimeout = 80 * time.Second
+)
+
 var (
 	labels = []string{"server_id", "server_name", "server_location", "server_country", "isp"}
 
@@ -53,7 +58,8 @@ type result struct {
 }
 
 type collector struct {
-	run func() ([]byte, error)
+	run    func() ([]byte, error)
+	minAge time.Duration
 
 	mu       sync.Mutex
 	finished time.Time
@@ -67,11 +73,10 @@ func (c *collector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *collector) Collect(ch chan<- prometheus.Metric) {
-	arrived := time.Now()
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	// A test that finished while we waited for the lock is fresh enough to reuse.
-	if !c.finished.After(arrived) {
+	// Extra scrapes reuse a recent result so they do not run into the Ookla rate limit.
+	if time.Since(c.finished) > c.minAge {
 		c.metrics = c.test()
 		c.finished = time.Now()
 	}
@@ -134,9 +139,16 @@ func (c *collector) parse() ([]prometheus.Metric, *result, error) {
 }
 
 func runSpeedtest() ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 80*time.Second)
+	return runCommand(speedtestTimeout, "speedtest", "--accept-license", "--accept-gdpr", "-f", "json")
+}
+
+func runCommand(timeout time.Duration, name string, args ...string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	out, err := exec.CommandContext(ctx, "speedtest", "--accept-license", "--accept-gdpr", "-f", "json").Output()
+	out, err := exec.CommandContext(ctx, name, args...).Output()
+	if err != nil && ctx.Err() != nil {
+		return nil, fmt.Errorf("timed out after %s: %w", timeout, withStderr(err))
+	}
 	return out, withStderr(err)
 }
 
@@ -150,11 +162,13 @@ func withStderr(err error) error {
 }
 
 func main() {
-	prometheus.MustRegister(&collector{run: runSpeedtest})
+	prometheus.MustRegister(&collector{run: runSpeedtest, minAge: minResultAge})
 	http.Handle("/metrics", promhttp.Handler())
 	addr := ":9469"
 	slog.Info("listening", "addr", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	// No WriteTimeout: a scrape waits for the whole speed test.
+	srv := &http.Server{Addr: addr, ReadHeaderTimeout: 10 * time.Second}
+	if err := srv.ListenAndServe(); err != nil {
 		slog.Error("server stopped", "err", err)
 		os.Exit(1)
 	}

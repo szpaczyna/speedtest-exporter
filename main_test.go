@@ -108,7 +108,7 @@ func TestCollectConcurrent(t *testing.T) {
 	data := fixture(t)
 	var calls atomic.Int32
 	started := make(chan struct{})
-	c := &collector{run: func() ([]byte, error) {
+	c := &collector{minAge: time.Minute, run: func() ([]byte, error) {
 		if calls.Add(1) == 1 {
 			close(started)
 		}
@@ -122,6 +122,29 @@ func TestCollectConcurrent(t *testing.T) {
 	wg.Wait()
 	if n := calls.Load(); n != 1 {
 		t.Fatalf("run called %d times, want 1", n)
+	}
+}
+
+func TestCollectMinAge(t *testing.T) {
+	data := fixture(t)
+	var calls int
+	c := &collector{minAge: time.Hour, run: func() ([]byte, error) { calls++; return data, nil }}
+	testutil.CollectAndCount(c)
+	testutil.CollectAndCount(c)
+	if calls != 1 {
+		t.Fatalf("run called %d times within minAge, want 1", calls)
+	}
+	c.finished = time.Now().Add(-2 * time.Hour)
+	testutil.CollectAndCount(c)
+	if calls != 2 {
+		t.Fatalf("run called %d times after minAge, want 2", calls)
+	}
+}
+
+func TestRunCommandTimeout(t *testing.T) {
+	_, err := runCommand(50*time.Millisecond, "sleep", "5")
+	if err == nil || !strings.HasPrefix(err.Error(), "timed out after 50ms: ") {
+		t.Fatalf("got %v", err)
 	}
 }
 

@@ -1,6 +1,6 @@
 # speedtest-exporter
 
-Prometheus exporter in Go that runs the official [Ookla Speedtest CLI](https://www.speedtest.net/apps/cli) on each scrape and serves the results on port 9469 at `/metrics`.
+Prometheus exporter in Go that runs the official [Ookla Speedtest CLI](https://www.speedtest.net/apps/cli) when scraped and serves the results on port 9469 at `/metrics`.
 
 ## Images
 
@@ -16,7 +16,7 @@ docker run -d --name speedtest-exporter -p 127.0.0.1:9469:9469 szpaczyn/speedtes
 curl http://localhost:9469/metrics
 ```
 
-Each scrape runs a full speed test, which takes about 30 seconds. The exporter stops the CLI after 80 seconds, so set `scrape_timeout` to 90s or more and use a long `scrape_interval` to avoid saturating your link:
+A scrape runs a full speed test, which takes about 30 seconds, unless the last test finished less than 10 minutes ago. In that case the exporter returns the last result, so extra requests to `/metrics` do not hit the Ookla rate limit. The exporter stops the CLI after 80 seconds, so set `scrape_timeout` to 90s or more and use a `scrape_interval` longer than 10 minutes:
 
 ```yaml
 scrape_configs:
