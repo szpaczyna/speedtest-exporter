@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.2.1](https://github.com/szpaczyna/speedtest-exporter/compare/v2.2.0...v2.2.1) (2026-11-28)
+
+
+### Bug Fixes
+
+* cache the speedtest result between scrapes ([77618c8](https://github.com/szpaczyna/speedtest-exporter/commit/77618c8fe904702470540e4d597731c376b3e205))
+* cache the speedtest result between scrapes ([71eb019](https://github.com/szpaczyna/speedtest-exporter/commit/71eb01948f334b415a0761b88363dff38a18c77f))
+
+
+### Miscellaneous
+
+* **deps:** update grafana/grafana docker tag to v13.3.2 ([447cb4f](https://github.com/szpaczyna/speedtest-exporter/commit/447cb4f6560aadde78df1d1fcad8b15453efd800))
+* **deps:** update grafana/grafana docker tag to v13.3.2 ([b589cad](https://github.com/szpaczyna/speedtest-exporter/commit/b589cadba34960ad6c7c8ea39bf355fc1c03fd61))
+
+
+### CI/CD
+
+* scope release permissions per job and drop QEMU ([6ff747e](https://github.com/szpaczyna/speedtest-exporter/commit/6ff747ebfd91aff6c6d4f2af8e82058f641dd5a0))
+* scope release permissions per job and drop QEMU ([4a177c2](https://github.com/szpaczyna/speedtest-exporter/commit/4a177c2e88c6cefcbf50659ee753fb993f5cace3))
+
 ## [2.2.0](https://github.com/szpaczyna/speedtest-exporter/compare/v2.1.1...v2.2.0) (2026-11-23)
 
 
