@@ -12,7 +12,7 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
     go build -trimpath -ldflags="-s -w" -o /speedtest-exporter .
 
-FROM alpine:3.24 AS speedtest
+FROM --platform=$BUILDPLATFORM alpine:3.24 AS speedtest
 
 ARG SPEEDTEST_VERSION=1.2.0
 ARG TARGETARCH
